@@ -8,17 +8,8 @@ const Game = () => {
     const [snake, setSnake] = useState([]);
     const [obstacles, setObstacles] = useState([]);
     const [validMoves, setValidMoves] = useState([]);
-
     const [score, setScore] = useState(0);
     const [startGame, setStartGame] = useState(false)
-
-    const restart = () => {
-        setValidMoves([]);
-        setSnake([]);
-        setObstacles([]);
-        setScore(0);
-        setStartGame(!startGame);
-    }
 
     useEffect(() => {
             const snakeHead = getRandomPosition();
@@ -87,29 +78,9 @@ const Game = () => {
         if(cellIsOccupiedBy(obstacles, move)){
             return false;
         }
-        // if(move.row < 0 || move.row >= BOARD_ROWS || move.col < 0 || move.col >= BOARD_COLUMNS){
-            
-        // }
 
-        // if(snake.some((snakePart) => checkIfPartIsOnCell(snakePart, move))){
-        //     return false;
-        // }
-
-        // if(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, move))){
-        //     return false;
-        // }
         return true;
     }
-    
-    // const getWhiteCellColor = (row, index) => {
-    //     if(row % 2 === 0 && index % 2 === 0){
-    //         return " Board__GridCell--White";
-    //     } 
-    //     if (row % 2 === 1 && index % 2 === 1){
-    //         return " Board__GridCell--White";
-    //     }
-    //     return "";
-    // }
 
     const getRandomObstacle = () => {
         let randomObstacle = getRandomPosition();
@@ -117,17 +88,11 @@ const Game = () => {
         if(cellIsOccupiedBy(snake, randomObstacle) || cellIsOccupiedBy(obstacles, randomObstacle)){
             return getRandomObstacle();
         }
-        
-        // if(snake.some((snakePart) => checkIfPartIsOnCell(snakePart, randomObstacle))){
-        //     return getRandomObstacle();
-        // }
-        
-        // if(obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, randomObstacle))){
-        //     return getRandomObstacle();
-        // }
 
         randomObstacle.counter = 20;
+        
         let updatedObstacles = updateObstacleCounterAndRemoveIfZero([...obstacles]);
+
         return [...updatedObstacles, randomObstacle];
     }
 
@@ -173,24 +138,8 @@ const Game = () => {
     }
 
     const moveSnake = (direction) =>{
-        // let newDirection = {};
-        // switch (direction) {
-        //     case "left":
-        //         newDirection = {row: snake[0].row, col: snake[0].col - 1};
-        //         break;
-        //     case "up":
-        //         newDirection = {row: snake[0].row - 1, col: snake[0].col};
-        //         break;
-        //     case "right":
-        //         newDirection = {row: snake[0].row, col: snake[0].col + 1};
-        //         break;
-        //     case "down":
-        //         newDirection = {row: snake[0].row + 1, col: snake[0].col};
-        //     break;
-        // }
-
         let updatedSnake = [...snake];
-        // updatedSnake.unshift(newDirection);
+        
         updatedSnake.unshift(direction);
 
         if(updatedSnake.length > MAX_SNAKE_LENGTH){
@@ -218,6 +167,14 @@ const Game = () => {
         const [{counter}] = obstacles.filter(obstacle => obstacle.row === cell.row && obstacle.col === cell.col);
         return counter;
     }
+
+    const restart = () => {
+        setValidMoves([]);
+        setSnake([]);
+        setObstacles([]);
+        setScore(0);
+        setStartGame(!startGame);
+    }
     
     const boardJsx = BOARD_GRID.map((cell, index) => (
         <div className={`Board__GridCell${getWhiteCellColor(cell.row, index)}`} key={cell.row.toString()+ cell.col.toString()}>
@@ -228,39 +185,18 @@ const Game = () => {
                     style={getSnakeStyle(cell)}
                     ></div>
                 )}
-                {/* {snake.some((snakePart) => checkIfPartIsOnCell(snakePart, cell)) && (
-                    <div 
-                    className={`Board__Snake`} 
-                    style={getSnakeStyle(snake.findIndex(snakePart => checkIfPartIsOnCell(snakePart, cell)))}
-                    ></div>
-                )} */}
+                
                 {cellIsOccupiedBy(validMoves, cell) && (
                     <div 
                     className={`Board__ValidMove`}
                     onClick={() => handleClick(cell)}
                     ></div>
                 )}
-                {/* {validMoves.some((validCell) => checkIfPartIsOnCell(validCell, cell)) && (
-                    <div 
-                    className={`Board__ValidMove`}
-                    onClick={() => handleClick(cell)}
-                    ></div>
-                )} */}
-                {/* {validMoves.some((validCell) => checkIfPartIsOnCell(validCell, cell)) && (
-                    <div 
-                    className={`Board__ValidMove`}
-                    onClick={() => handleClick(cell)}
-                    ></div>
-                )} */}
+                
                 {cellIsOccupiedBy(obstacles, cell) && (
                     <Obstacle counter={getObstacleCounter(cell)}/>
                 )}
-                {/* {(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, cell))) && (     
-                    <Obstacle counter={getObstacleCounter(cell)}/>
-                )} */}
-                {/* {(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, cell))) && (     
-                    <Obstacle counter={getObstacleCounter(cell)}/>
-                )} */}
+                
         </div>
     ))
 
