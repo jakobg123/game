@@ -33,24 +33,24 @@
     }
     
     &__ValidMove{
-        background-color: yellow;
         width: 100%;
         height: 100%;
+        animation-name: animateValidMove;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
     }
 
     &__Destroy{
-
-        &--Three{
-            background-color: blue;
-        }
+        animation-name: animateObstacleDestruction;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
         
         &--Two{
-            background-color: violet;
-            
+            animation-duration: .6s;
         }
         
         &--One{
-            background-color: green;
+            animation-duration: .2s;
         }
     }
 
