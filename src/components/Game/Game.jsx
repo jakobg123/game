@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import {BOARD_ROWS, BOARD_COLUMNS, BOARD_GRID, getWhiteCellColor} from "../../utils/board";
-import {MAX_SNAKE_LENGTH} from "../../utils/options";
+import {DIFFICULTY} from "../../utils/options";
 import {Obstacle} from "../Obstacle/Obstacle.jsx";
 import "./Game.scss";
 
@@ -10,6 +10,8 @@ const Game = () => {
     const [validMoves, setValidMoves] = useState([]);
     const [score, setScore] = useState(0);
     const [startGame, setStartGame] = useState(false)
+    const [difficultyLevel, setDifficultyLevel] = useState(DIFFICULTY.medium)
+
 
     useEffect(() => {
             const snakeHead = getRandomPosition();
@@ -89,7 +91,7 @@ const Game = () => {
             return getRandomObstacle();
         }
 
-        randomObstacle.counter = 20;
+        randomObstacle.counter = difficultyLevel.obstacleCounter;
         
         let updatedObstacles = updateObstacleCounterAndRemoveIfZero([...obstacles]);
 
@@ -142,7 +144,7 @@ const Game = () => {
         
         updatedSnake.unshift(direction);
 
-        if(updatedSnake.length > MAX_SNAKE_LENGTH){
+        if(updatedSnake.length > difficultyLevel.snakeLength){
             updatedSnake.pop();
         }
 
@@ -156,7 +158,9 @@ const Game = () => {
 
     const getSnakeStyle = (cell) => {
         const snakePartIndex = snake.findIndex(snakePart => checkIfPartIsOnCell(snakePart, cell));
-        const scaleValue = 1 - (snakePartIndex/MAX_SNAKE_LENGTH);
+        
+        const scaleValue = 1 - (snakePartIndex/difficultyLevel.snakeLength);
+        
         return {transform: `scale(${scaleValue.toString()})`};
     }
 
@@ -166,6 +170,10 @@ const Game = () => {
         }
         const [{counter}] = obstacles.filter(obstacle => obstacle.row === cell.row && obstacle.col === cell.col);
         return counter;
+    }
+
+    const setDifficulty = (event) => {
+        setDifficultyLevel(DIFFICULTY[event.currentTarget.value])
     }
 
     const restart = () => {
@@ -201,8 +209,19 @@ const Game = () => {
     ))
 
     return (
-        <>
-            <h1>Score: {score}</h1>
+        <div className="Game">  
+            <header className="Game__Header">
+                <h1>Score: {score}</h1>
+                <form>
+                    <label for="difficulty">Difficulty</label>
+                    <select id="difficulty" name="difficulty" onChange={setDifficulty} disabled={snake.length > 1 ? true : false}>
+                        <option value="easy">Easy</option>
+                        <option selected="selected" value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="insane">Insane</option>
+                    </select>
+                </form>
+            </header>
             <div className="Board">            
                 {boardJsx}
                 {(!validMoves.length && !!obstacles.length) && (
@@ -214,7 +233,7 @@ const Game = () => {
                 )
                 }
             </div>
-        </>
+        </div>
     )
 }
 
