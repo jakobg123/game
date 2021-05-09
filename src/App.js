@@ -1,11 +1,10 @@
-import Board from "./components/Board/Board";
+import Game from "./components/Game/Game";
 import "./style/index.scss";
 
 function App() {
   return (
     <div className="App">
-      hej
-      <Board />
+      <Game />
     </div>
   );
 }
