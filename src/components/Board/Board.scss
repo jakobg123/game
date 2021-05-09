@@ -1,0 +1,83 @@
+.Board{
+    
+    background-color: #cdcdcd;
+    color: black;
+    width: 70rem;
+    height: 70rem;
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: 900;
+    position: relative;
+
+    &__GridCell{
+        flex: 1 1 calc(70rem / 8);
+        text-align: center;
+        padding: 1rem;
+
+        &--White{
+            background-color: white;
+        }
+    }
+
+    &__Snake{
+        background-color: mediumaquamarine;
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__Obstacle{
+        background-color: red;
+        width: 100%;
+        height: 100%;
+    }
+    
+    &__ValidMove{
+        background-color: yellow;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__Destroy{
+
+        &--Three{
+            background-color: blue;
+        }
+        
+        &--Two{
+            background-color: violet;
+            
+        }
+        
+        &--One{
+            background-color: green;
+        }
+    }
+
+    &__GameOver{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: rgba(255, 0, 0, .005);
+        // opacity: .005;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 2;
+
+        h1{
+            padding: 2rem;
+            background-color: white;
+            margin-bottom: .5rem;
+            font-size: 2.6rem;
+        }
+
+        button{
+            border: 1px solid black;
+            font-size: 1.6rem;
+        }
+    }
+}
