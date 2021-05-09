@@ -10,20 +10,35 @@ const Board = () => {
 
     const [allMoves, setAllMoves] = useState(0);
     const [allObstacles, setAllObstacles] = useState(0);
+
+    const [restartGame, setRestartGame] = useState(false)
     
-    const [boardDimension, setBoardDimension] = useState(
-        {
-            rows: 8,
-            cols: 8,
-            grid: [],
-        }
-    )
+    // const [boardDimension, setBoardDimension] = useState(
+    //     {
+    //         // rows: 2,
+    //         // cols: 2,
+    //         rows: 8,
+    //         cols: 8,
+    //         grid: [],
+    //     }
+    // )
+
+    const BOARD_ROWS = 8;
+    const BOARD_COLUMNS = 8;
     
     let gridData = [];
-    for(let row = 0; row < boardDimension.rows; row++){
-        for(let col = 0; col < boardDimension.cols; col++){
+    for(let row = 0; row < BOARD_ROWS; row++){
+        for(let col = 0; col < BOARD_COLUMNS; col++){
             gridData.push({row, col})
         }
+    }
+
+    const restart = () => {
+        setValidMoves([]);
+        setSnake([]);
+        setObstacles([]);
+        setAllMoves(0);
+        setRestartGame(!restartGame);
     }
 
     // useEffect(() => {
@@ -33,26 +48,60 @@ const Board = () => {
     // }, [validMoves])
 
     useEffect(() => {
-        if(!boardDimension.grid.length){
             const snakeHead = getRandomPosition();
             setSnake([...snake, snakeHead]);
-            setBoardDimension({...boardDimension, grid: gridData});
+    }, [restartGame])
+
+    // useEffect(() => {
+    //     // if(!boardDimension.grid.length){
+
+    //         const snakeHead = getRandomPosition();
+    //         setSnake([...snake, snakeHead]);
+    //         // setBoardDimension({...boardDimension, grid: gridData});
+    //     // }
+    // }, [restartGame])
+
+    useEffect(() => {
+        if(snake.length === 1){
+            getValidMoves();
         }
-    }, [])
+
+        // if(!!obstacles.length){
+            // let prevObstacles = [...obstacles];
+            // console.log("OUTPUT ÄR ~ file: Board.jsx ~ line 62 ~ useEffect ~ prevObstacles", prevObstacles)
+
+            // const updatedObstacles = updateObstacleCounterAndRemoveIfZero(prevObstacles)
+            // console.log("OUTPUT ÄR ~ file: Board.jsx ~ line 64 ~ useEffect ~ updatedObstacles", updatedObstacles)
+
+            // setObstacles(updatedObstacles);
+        // }
+
+        if(snake.length > 1){
+            getRandomObstacle();
+        }
+
+        // getValidMoves();
+    }, [snake])
 
     useEffect(() => {
         getValidMoves();
+    }, [obstacles])
 
-        if(!!obstacles.length){
-            let prevObstacles = [...obstacles];
+    // useEffect(() => {
 
-            const updatedObstacles = updateObstacleCounterAndRemoveIfZero(prevObstacles)
+    //     if(!!obstacles.length){
+    //         let prevObstacles = [...obstacles];
 
-            setObstacles(updatedObstacles);
-        }
-    }, [snake])
+    //         const updatedObstacles = updateObstacleCounterAndRemoveIfZero(prevObstacles)
+    //         console.log("OUTPUT ÄR ~ file: Board.jsx ~ line 64 ~ useEffect ~ updatedObstacles", updatedObstacles)
+
+    //         setObstacles(updatedObstacles);
+    //     }
+        
+    // }, [allMoves])
 
     const updateObstacleCounterAndRemoveIfZero = (prevObstacles) => {
+        console.log("uppdateringscountern körs");
         return prevObstacles.reduce((filtered, obstacle) => {
             const updatedCounter = obstacle.counter - 1;
 
@@ -109,7 +158,7 @@ const Board = () => {
         //     return false;
         // }
         
-        if(move.row < 0 || move.row >= boardDimension.rows || move.col < 0 || move.col >= boardDimension.cols){
+        if(move.row < 0 || move.row >= BOARD_ROWS || move.col < 0 || move.col >= BOARD_COLUMNS){
             return false;
         }
 
@@ -125,35 +174,54 @@ const Board = () => {
     
     const getWhiteCellColor = (row, index) => {
         if(row % 2 === 0 && index % 2 === 0){
-            return "Board__GridCell--White";
+            return " Board__GridCell--White";
         } 
         if (row % 2 === 1 && index % 2 === 1){
-            return "Board__GridCell--White";
+            return " Board__GridCell--White";
         }
+        return "";
     }
 
     const getRandomObstacle = () => {
-        const randomObstacle = getRandomPosition();
+        // let randomObstacle = {};
+        let randomObstacle = getRandomPosition();
+        console.log("OUTPUT ÄR ~ file: Board.jsx ~ line 154 ~ getRandomObstacle ~ randomObstacle", randomObstacle)
+        console.log("OUTPUT ÄR ~ file: Board.jsx ~ line 153 ~ getRandomObstacle ~ snake", snake)
 
         if(snake.some((snakePart) => checkIfPartIsOnCell(snakePart, randomObstacle))){
             console.log("FEEEEEEEEEEEEEEEEEEEELLLLLLLLLLLLL: ", randomObstacle);
             return getRandomObstacle();
         }
         
-        if(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, randomObstacle))){
+        if(obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, randomObstacle))){
+            console.log("161 FEEEEEEEEEEEEEEEEEEEELLLLLLLLLLLLL: ", randomObstacle);
             return getRandomObstacle();
         }
 
-        randomObstacle.counter = 21;
-        setObstacles([...obstacles, randomObstacle]);
+        randomObstacle.counter = 20;
+        let updatedObstacles = updateObstacleCounterAndRemoveIfZero([...obstacles]);
+        console.log("NU SÄTTS EN OBSTACLE");
+        return setObstacles([...updatedObstacles, randomObstacle]);
+        // return setObstacles([...obstacles, randomObstacle]);
     }
 
-    const getRandomPosition = () => (
-        {
-            row: Math.floor(Math.random() * boardDimension.rows),
-            col: Math.floor(Math.random() * boardDimension.cols),
-        }
-    )
+    const getRandomPosition = () => {
+        console.log("den slumpar fram ett nytt tal");
+        return (
+            {
+                row: Math.floor(Math.random() * BOARD_ROWS),
+                col: Math.floor(Math.random() * BOARD_COLUMNS),
+            }
+
+        )
+    }
+
+    // const getRandomPosition = () => (
+    //     {
+    //         row: Math.floor(Math.random() * boardDimension.rows),
+    //         col: Math.floor(Math.random() * boardDimension.cols),
+    //     }
+    // )
 
     const handleClick = (direction) => {
         let newDirection = {row: snake[0].row - direction.row, col: snake[0].col - direction.col};
@@ -210,8 +278,8 @@ const Board = () => {
 
     const updateGame = (updatedSnake) => {
         
-        getRandomObstacle();
         setSnake(updatedSnake);
+        // getRandomObstacle();
         setAllMoves(allMoves + 1);
         // setAllObstacles(allObstacles + 1);
     }
@@ -254,7 +322,8 @@ const Board = () => {
     const checkIfPartIsOnCell = (part, cell) => part.row === cell.row && part.col === cell.col;
 
     const getSnakeStyle = (index) => {
-        const scaleValue = 1 - (index/snake.length);
+        const scaleValue = 1 - (index/7);
+        // const scaleValue = 1 - (index/snake.length);
         return {transform: `scale(${scaleValue.toString()})`};
     }
 
@@ -267,8 +336,8 @@ const Board = () => {
     }
     
 
-    const gridJsx = boardDimension.grid.map((cell, index) => (
-        <div className={`Board__GridCell ${getWhiteCellColor(cell.row, index)}`} key={cell.row.toString()+ cell.col.toString()}>
+    const gridJsx = gridData.map((cell, index) => (
+        <div className={`Board__GridCell${getWhiteCellColor(cell.row, index)}`} key={cell.row.toString()+ cell.col.toString()}>
             {/* {cell.row + "/" + cell.col} */}
 
                 {snake.some((snakePart) => checkIfPartIsOnCell(snakePart, cell)) && (
@@ -278,23 +347,6 @@ const Board = () => {
                     ></div>
                 )}
 
-                {(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, cell))) && (     
-                    
-                    // let stuff = obstacles.filter(obstacle => obstacle.row === cell.row && obstacle.col === cell.col);
-                    // return(
-                        <Obstacle counter={getObstacleCounter(cell)}/>
-                    // )
-                )
-                
-                // obstacles.filter(x => x.row === cell.row && x.col === cell.col)(
-                        
-                //         <Obstacle />
-                //     // <div 
-                //     // className={`Board__Obstacle`} 
-                //     // >{cell.row}/{cell.col}</div>
-                // )
-                }
-
                 {validMoves.some((validCell) => checkIfPartIsOnCell(validCell, cell)) && (
                     <div 
                     className={`Board__ValidMove`}
@@ -302,16 +354,11 @@ const Board = () => {
                     ></div>
                 )}
 
-                {(!validMoves.length) && (
-                // {(!validMoves.length && !!obstacles.length) && (
-                    <div 
-                    className={`Board__GameOver`}
-                    >   <h1>GAME OVER</h1>
-                        <button onClick={() => console.log("hej")}>Restart</button>
-                    </div>
-                )
-                }
+                {(!!obstacles.length && obstacles.some((obstacle) => checkIfPartIsOnCell(obstacle, cell))) && (     
+                    <Obstacle counter={getObstacleCounter(cell)}/>
+                )}
 
+                
         </div>
     ))
 
@@ -321,6 +368,14 @@ const Board = () => {
             <h1>Obstacles: {allObstacles}</h1>
             <div className="Board" tabIndex="0">            
                 {gridJsx}
+                {(!validMoves.length && !!obstacles.length) && (
+                    <div 
+                    className={`Board__GameOver`}
+                    >   <h1>GAME OVER</h1>
+                        <button onClick={restart}>Restart</button>
+                    </div>
+                )
+                }
             </div>
         </>
     )
@@ -330,18 +385,18 @@ const Obstacle = ({counter}) => {
     let destroyClass = "";
 
     if(counter === 3){
-        destroyClass = "Board__Destroy--Three";
+        destroyClass = " Board__Destroy--Three";
     }
     if(counter === 2){
-        destroyClass = "Board__Destroy--Two";
+        destroyClass = " Board__Destroy--Two";
     }
     if(counter === 1){
-        destroyClass = "Board__Destroy--One";
+        destroyClass = " Board__Destroy--One";
     }
 
     return (
         <div 
-        className={`Board__Obstacle ${!!destroyClass && destroyClass}`} 
+        className={`Board__Obstacle${!!destroyClass ? destroyClass : ""}`} 
         >{counter}</div>
     )
 };
