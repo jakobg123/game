@@ -1,0 +1,11 @@
+@keyframes animateValidMove {
+  0%   {background-color: rgb(64, 245, 109);}
+  50%  {background-color: rgb(159, 246, 181);}
+  100% {background-color: rgb(64, 245, 109);}
+}
+
+@keyframes animateObstacleDestruction {
+  0%   {background-color: red; transform: rotateZ(-10deg);}
+  50%  {background-color: rgb(255, 134, 134); transform: rotateZ(10deg);}
+  100% {background-color: red; transform: rotateZ(-10deg);}
+}
