@@ -222,7 +222,7 @@ const Game = () => {
                     </select>
                 </form>
             </header>
-            <div className="Board">            
+            <main className="Board">            
                 {boardJsx}
                 {(!validMoves.length && !!obstacles.length) && (
                     <div 
@@ -232,7 +232,7 @@ const Game = () => {
                     </div>
                 )
                 }
-            </div>
+            </main>
         </div>
     )
 }
